@@ -10,8 +10,8 @@ router.route('/registrations').post (req, res, next) ->
     username: req.body.username
   ), req.body.password, (err) ->
     if (err)
-      res.status 422
-      res.json
+      res.status(422)
+      .json
         success: false
         errors: [err]
     else

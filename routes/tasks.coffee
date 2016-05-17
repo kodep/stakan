@@ -5,23 +5,24 @@ router   = express.Router()
 Task = mongoose.model('Task')
 User = mongoose.model('User')
 
-router.route('/tasks').get (req, res, next) ->
+router.get '/tasks', (req, res, next) ->
   if req.user?
     tasks = Task.find
       user: req.user._id
-    , (err, tasks)->
+    .then (tasks) ->
       res.json
         tasks: tasks
   else
     res.status 404
     next()
 
-router.route('/tasks/:user_id').get (req, res, next) ->
-  User.findById req.params.user_id, (err, user) ->
+router.get '/tasks/:user_id', (req, res, next) ->
+  User.findById req.params.user_id
+  .then (user) ->
     tasks = Task.find
-      user: req.user._id
-    , (err, tasks)->
-      res.json
-        tasks: tasks
+      user: user._id
+  .then (tasks) ->
+    res.json
+      tasks: tasks
 
 module.exports = router
