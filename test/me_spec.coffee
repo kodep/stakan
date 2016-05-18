@@ -9,8 +9,7 @@ describe 'Me', ->
     beforeEach (done) ->
       h.connectMongoose()
       h.clearDb ->
-        h.registerUser(userEmail, userPass).then ->
-          done()
+        h.registerUser(userEmail, userPass).then done
 
     it 'gives current user when signed in', (done) ->
       h.login(userEmail, userPass)

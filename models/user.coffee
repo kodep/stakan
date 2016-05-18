@@ -2,7 +2,9 @@ mongoose              = require('mongoose')
 Schema                = mongoose.Schema
 passportLocalMongoose = require('passport-local-mongoose')
 
-User = new mongoose.Schema {}
+User = new mongoose.Schema {
+  token: String
+}
 
 User.plugin(passportLocalMongoose)
 

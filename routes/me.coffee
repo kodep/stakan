@@ -1,8 +1,12 @@
-express  = require('express')
-mongoose = require('mongoose')
-router   = express.Router()
+passport  = require('passport')
+express   = require('express')
+mongoose  = require('mongoose')
+router    = express.Router()
 
-router.route('/me').get (req, res) ->
-  res.json req.user
+router.get '/me',
+  passport.authenticate( 'http-header-token',
+    session: false
+  ), (req, res) ->
+    res.json req.user
 
 module.exports = router

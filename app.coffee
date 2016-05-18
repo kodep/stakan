@@ -7,6 +7,9 @@ bodyParser    = require 'body-parser'
 mongoose      = require 'mongoose'
 passport      = require 'passport'
 LocalStrategy = require('passport-local').Strategy
+
+HTTPHeaderTokenStrategy = require('passport-http-header-token').Strategy
+
 session       = require 'express-session'
 
 User          = require('./models/user')
@@ -20,6 +23,7 @@ routesTasks         = require './routes/tasks'
 require('coffee-script/register')
 
 app = express()
+app.use logger 'dev'
 
 app.use session
   secret:            'topsecret'
@@ -30,7 +34,16 @@ app.use passport.initialize()
 app.use passport.session()
 
 # Configure passport-local to use account model for authentication
-passport.use new LocalStrategy(User.authenticate())
+# passport.use new LocalStrategy(User.authenticate())
+
+passport.use new HTTPHeaderTokenStrategy( (token, done) ->
+  User.findOne
+    token: token
+  .then (user) ->
+    if (!user)
+      done(null, false)
+     done(null, user)
+)
 
 passport.serializeUser User.serializeUser()
 passport.deserializeUser User.deserializeUser()
@@ -41,7 +54,6 @@ app.set 'view engine', 'jade'
 
 # uncomment after placing your favicon in /public
 # app.use favicon "#{__dirname}/public/favicon.ico"
-app.use logger 'dev'
 app.use bodyParser.json()
 app.use bodyParser.urlencoded
   extended: false
