@@ -6,14 +6,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node -r coffee-script/register server.coffee",
-    "test": "NODE_ENV=test mocha -r should -r coffee-script/register -R spec ./test/*.coffee",
-    "test:angular": "NODE_ENV=test gulp compile && karma start"
+    "test": "NODE_ENV=test mocha -r should -r coffee-script/register -R spec ./test/*.coffee"
   },
   "author": "Andrei Malyshev <Andrei.Malyshev@kodep.ru> (http://kodep.ru/)",
   "license": "ISC",
   "dependencies": {
-    "angular": "^1.5.3",
-    "angular-resource": "^1.5.3",
     "body-parser": "^1.15.0",
     "coffee-script": "^1.10.0",
     "cookie-parser": "~1.4.1",
@@ -26,6 +23,7 @@
     "morgan": "~1.6.1",
     "node-sass-middleware": "0.8.0",
     "passport": "^0.3.2",
+    "passport-http-api-token-bearer": "^1.0.1",
     "passport-http-header-token": "^1.0.0",
     "passport-local": "^1.0.0",
     "passport-local-mongoose": "^4.0.0",

@@ -6,9 +6,9 @@ cookieParser  = require 'cookie-parser'
 bodyParser    = require 'body-parser'
 mongoose      = require 'mongoose'
 passport      = require 'passport'
-LocalStrategy = require('passport-local').Strategy
 
 HTTPHeaderTokenStrategy = require('passport-http-header-token').Strategy
+LocalStrategy           = require('passport-local').Strategy
 
 session       = require 'express-session'
 
@@ -31,10 +31,7 @@ app.use session
   saveUninitialized: false
 
 app.use passport.initialize()
-app.use passport.session()
-
-# Configure passport-local to use account model for authentication
-# passport.use new LocalStrategy(User.authenticate())
+passport.use new LocalStrategy(User.authenticate())
 
 passport.use new HTTPHeaderTokenStrategy( (token, done) ->
   User.findOne
