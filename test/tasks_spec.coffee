@@ -69,7 +69,7 @@ describe 'Tasks API', ->
             @second_user = user
             done()
 
-    it 'allows registered user to create task for himself', (done) ->
+    it 'allows registered user to create task', (done) ->
       h.agent.post('/api/tasks/')
       .set('Authorization', "Token #{token}")
       .send
