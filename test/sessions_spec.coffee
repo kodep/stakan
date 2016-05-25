@@ -2,13 +2,15 @@ h = require './test_helper'
 
 userEmail = 'user@example.com'
 userPass  = 'supersecret'
+token     = undefined
 
 describe 'Sessions', ->
   describe 'sign in', ->
     beforeEach (done) ->
       h.connectMongoose()
       h.clearDb ->
-        h.registerUser(userEmail, userPass).then ->
+        h.registerUser(userEmail, userPass).then (user) ->
+          token = user.token
           done()
 
     it 'is successful on correct combination of login and password', (done) ->

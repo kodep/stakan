@@ -1,7 +1,8 @@
-config   = require('../config/test')
-mongoose = require('mongoose')
-Promise  = require('promise')
-request  = require('supertest')
+config    = require('../config/test')
+mongoose  = require('mongoose')
+Promise   = require('promise')
+request   = require('supertest')
+randtoken = require('rand-token')
 require('promise/lib/rejection-tracking').enable()
 require('should-http')
 
@@ -19,16 +20,16 @@ registerUser = (username, password) ->
   new Promise (resolve, reject) ->
     user = new User
       username: username
+      token:    randtoken.uid(16)
     User.register user, password, (err) ->
-      if err
-        reject(err)
-      else
-        resolve(user)
+      return reject(err) if err
+      resolve(user)
 
 agent = request.agent(app)
 
-login = (username, password) ->
+login = (username, password, token) ->
   agent.post('/api/sessions/')
+  .set('Authorization', "Token #{token}")
   .send
     username: username
     password: password
