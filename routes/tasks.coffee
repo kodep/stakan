@@ -34,4 +34,17 @@ router.get(
         tasks: tasks
 )
 
+router.post(
+  '/tasks',
+  passport.authenticate('http-header-token'),
+  (req, res, next) ->
+    currentUser = req.user
+    task = new Task
+      content: req.body.content
+      author:  currentUser._id
+      user:    req.body.user_id
+    task.save()
+    res.json task
+)
+
 module.exports = router
