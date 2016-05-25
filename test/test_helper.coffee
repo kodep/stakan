@@ -44,6 +44,7 @@ createTaskForUser = (user, content) ->
   task = new Task
     content: content
     user: user._id
+    author: user._id
   task.save()
 
 module.exports =

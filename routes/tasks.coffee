@@ -47,4 +47,24 @@ router.post(
     res.json task
 )
 
+userInvolvedInTask = (user, task) ->
+  userId = user._id.toString()
+  task.author.toString() == userId || task.user.toString() == userId
+
+router.delete(
+  '/tasks/:task_id',
+  passport.authenticate('http-header-token'),
+  (req, res, next) ->
+    currentUser = req.user
+    Task.findById req.params.task_id
+    .then (task, err) ->
+      if userInvolvedInTask(currentUser, task)
+        task.remove()
+        .then ->
+          res.json task
+      else
+        res.status(401).json
+          error: 'Forbidden'
+)
+
 module.exports = router
