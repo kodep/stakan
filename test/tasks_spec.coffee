@@ -35,7 +35,7 @@ describe 'Tasks API', ->
       h.request(h.app).get('/api/tasks')
       .expect 400, done
 
-  describe '/tasks/:id', ->
+  describe 'GET /tasks/:id', ->
     beforeEach (done) ->
       h.connectMongoose()
       h.clearDb =>
@@ -79,6 +79,48 @@ describe 'Tasks API', ->
         return done(err) if err
         tasks = Task.find
           user: @second_user._id
+        .then (tasks) ->
+          tasks.length.should.equal 1
+          done()
+
+  taskCreated = undefined
+
+  describe 'DELETE /tasks/:id', ->
+    beforeEach (done) ->
+      h.connectMongoose()
+      h.clearDb =>
+        h.registerUser(userEmail, userPass)
+        .then (user) =>
+          token = user.token
+          @user = user
+          h.createTaskForUser(user, 'Blablabla')
+        .then (task) ->
+          taskCreated = task
+        .then ->
+          h.registerUser('second@mail.ru', 'second_user')
+        .then (user) =>
+          @second_user = user
+          done()
+
+    it 'allows registered user to delete his own task', (done) ->
+      h.agent.delete("/api/tasks/#{taskCreated._id}")
+      .set('Authorization', "Token #{token}")
+      .then (res, err) =>
+        return done(err) if err
+        tasks = Task.find
+          user: @user._id
+        .then (tasks) ->
+          tasks.length.should.equal 0
+          done()
+
+    it 'does not allow to delete user not involved in', (done) ->
+      h.agent.delete("/api/tasks/#{taskCreated._id}")
+      .set('Authorization', "Token #{@second_user.token}")
+      .expect 401
+      .then (res, err) =>
+        return done(err) if err
+        tasks = Task.find
+          user: @user._id
         .then (tasks) ->
           tasks.length.should.equal 1
           done()
