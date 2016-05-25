@@ -1,4 +1,7 @@
-h = require './test_helper'
+h         = require './test_helper'
+mongoose  = require('mongoose')
+
+Task = mongoose.model('Task')
 
 userEmail = 'user@example.com'
 userPass  = 'supersecret'
@@ -51,3 +54,31 @@ describe 'Tasks API', ->
       .then (res, err) ->
         res.body.tasks.length.should.equal 1
         done()
+
+  describe 'POST /tasks', (done) ->
+    beforeEach (done) ->
+      h.connectMongoose()
+      h.clearDb =>
+        h.registerUser(userEmail, userPass)
+        .then (user) =>
+          @user = user
+          token = user.token
+        .then =>
+          h.registerUser('second@mail.ru', 'second_user')
+          .then (user) =>
+            @second_user = user
+            done()
+
+    it 'allows registered user to create task', (done) ->
+      h.agent.post('/api/tasks/')
+      .set('Authorization', "Token #{token}")
+      .send
+        content: 'blablabla'
+        user_id:  @second_user._id
+      .then (res, err) =>
+        return done(err) if err
+        tasks = Task.find
+          user: @second_user._id
+        .then (tasks) ->
+          tasks.length.should.equal 1
+          done()
